@@ -13,6 +13,8 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -35,6 +37,9 @@ import javax.swing.JPanel;
 import edu.uci.ics.jung.graph.ArchetypeVertex;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.Vertex;
+import edu.uci.ics.jung.graph.decorators.AbstractVertexShapeFunction;
+import edu.uci.ics.jung.graph.decorators.ConstantVertexAspectRatioFunction;
+import edu.uci.ics.jung.graph.decorators.ConstantVertexSizeFunction;
 import edu.uci.ics.jung.graph.decorators.DefaultToolTipFunction;
 import edu.uci.ics.jung.graph.decorators.EdgeShape;
 import edu.uci.ics.jung.graph.decorators.VertexStringer;
@@ -98,23 +103,7 @@ public class GraphEditorDemo extends JApplet implements Printable {
     
     String instructions =
         "<html>"+
-        "<h3>All Modes:</h3>"+
-        "<ul>"+
-        "<li>Right-click an empty area for <b>Create Vertex</b> popup"+
-        "<li>Right-click on a Vertex for <b>Delete Vertex</b> popup"+
-        "<li>Right-click on a Vertex for <b>Add Edge</b> menus <br>(if there are selected Vertices)"+
-        "<li>Right-click on an Edge for <b>Delete Edge</b> popup"+
-        "<li>Mousewheel scales with a crossover value of 1.0.<p>"+
-        "     - scales the graph layout when the combined scale is greater than 1<p>"+
-        "     - scales the graph view when the combined scale is less than 1"+
-
-        "</ul>"+
-        "<h3>Editing Mode:</h3>"+
-        "<ul>"+
-        "<li>Left-click an empty area to create a new Vertex"+
-        "<li>Left-click on a Vertex and drag to another Vertex to create an Undirected Edge"+
-        "<li>Shift+Left-click on a Vertex and drag to another Vertex to create a Directed Edge"+
-        "</ul>"+
+    
         "<h3>Picking Mode:</h3>"+
         "<ul>"+
         "<li>Mouse1 on a Vertex selects the vertex"+
@@ -161,8 +150,17 @@ public class GraphEditorDemo extends JApplet implements Printable {
         pr.setVertexStringer(new VertexStringer() {
 
             public String getLabel(ArchetypeVertex v) {
-                return v.toString()+"x";
+                return "Task_"+v.toString();
             }});
+        // change size of vertex
+        pr.setVertexShapeFunction(new AbstractVertexShapeFunction(new ConstantVertexSizeFunction(40), 
+                new ConstantVertexAspectRatioFunction(1.0f)) {
+			
+			public Shape getShape(Vertex v) {
+				// TODO Auto-generated method stub
+				return factory.getEllipse(v);
+			}
+		});
 
         vv.setToolTipFunction(new DefaultToolTipFunction());
         
@@ -177,7 +175,7 @@ public class GraphEditorDemo extends JApplet implements Printable {
         graphMouse.setVertexLocations(vertexLocations);
         vv.setGraphMouse(graphMouse);
 //        graphMouse.add(new EditingPopupGraphMousePlugin(vertexLocations));
-        graphMouse.setMode(ModalGraphMouse.Mode.PICKING);
+        graphMouse.setMode(ModalGraphMouse.Mode.TRANSFORMING);
         
         final ScalingControl scaler = new CrossoverScalingControl();
         JButton plus = new JButton("+");
@@ -278,6 +276,12 @@ public class GraphEditorDemo extends JApplet implements Printable {
      */
     public static void main(String[] args) {
         JFrame frame = new JFrame("Task Information");
+//        frame.setBounds(500, 100, 100,1000);
+        frame.setLocation(100, 0);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        double width = screenSize.getWidth();
+        double height = screenSize.getHeight();
+        frame.setSize((int)width-200,(int) height-200);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         final GraphEditorDemo demo = new GraphEditorDemo();
         
@@ -307,7 +311,7 @@ public class GraphEditorDemo extends JApplet implements Printable {
         menuBar.add(menu);
         frame.setJMenuBar(menuBar);
         frame.getContentPane().add(demo);
-        frame.pack();
+//        frame.pack();
         frame.setVisible(true);
     }
 }
