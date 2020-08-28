@@ -394,7 +394,6 @@ public class GraphEditorDemo extends JApplet implements Printable {
         menuBar.add(menu);
         frame.setJMenuBar(menuBar);
         frame.getContentPane().add(demo);
-//        frame.pack();
         frame.setVisible(true);
     }
 }

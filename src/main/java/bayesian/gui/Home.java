@@ -62,7 +62,7 @@ public class Home extends JFrame implements ActionListener {
 	public Home() {
 		setResizable(false);
 		setTitle("RiskManagement App");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setBounds(100, 100, 565, 427);
 		contentPane = new JPanel();
 		contentPane.setForeground(Color.WHITE);
@@ -151,6 +151,11 @@ public class Home extends JFrame implements ActionListener {
 		logPanel.add(scroll); // Object of Jpanel
 	}
 
+	public void addLog(String str) {
+		log.append(str);
+		log.setCaretPosition(log.getDocument().getLength());
+	}
+
 	public void actionPerformed(ActionEvent e) {
 
 		if (e.getSource() != exeButton) {
@@ -161,29 +166,27 @@ public class Home extends JFrame implements ActionListener {
 				File file = fc.getSelectedFile();
 				if (e.getSource() == taskInfoButton) {
 					taskInfo = file.getPath();
-					log.append("Task info:\n" + "Importing file ..." + taskInfo + "\n");
-					log.setCaretPosition(log.getDocument().getLength());
+					addLog("Task info:\n" + "Importing file ..." + taskInfo + "\n");
 
 				}
 				if (e.getSource() == riskInfoButton) {
 					riskInfo = file.getPath();
-					log.append("Risk info:\n" + "Importing file ...." + riskInfo + "\n");
-					log.setCaretPosition(log.getDocument().getLength());
+					addLog("Risk info:\n" + "Importing file ...." + riskInfo + "\n");
 				}
 				if (e.getSource() == riskRelateButton) {
 					riskRelate = file.getPath();
-					log.append("Risk relations:\n" + "Importing file ..." + riskRelate + "\n");
-					log.setCaretPosition(log.getDocument().getLength());
+					addLog("Risk relations:\n" + "Importing file ..." + riskRelate + "\n");
+
 				}
 				if (e.getSource() == riskDisButton) {
 					riskDis = file.getPath();
-					log.append("Risk Distribution:\n" + "Importing file ...." + riskDis + "\n");
-					log.setCaretPosition(log.getDocument().getLength());
+					addLog("Risk Distribution:\n" + "Importing file ...." + riskDis + "\n");
+
 				}
 				if (e.getSource() == DInfoButton) {
 					DInfo = file.getPath();
-					log.append("Dimension Info:\n" + "Importing file ...." + DInfo + "\n");
-					log.setCaretPosition(log.getDocument().getLength());
+					addLog("Dimension Info:\n" + "Importing file ...." + DInfo + "\n");
+
 				}
 
 			}
@@ -192,6 +195,12 @@ public class Home extends JFrame implements ActionListener {
 			/* execute the program */
 			log.append("Caculating probability ....\n");
 			log.setCaretPosition(log.getDocument().getLength());
+			try {
+				addLog("Bayesian Network Visualization ....");
+				BayesianNet bayNet = new BayesianNet();
+			} catch (Exception e2) {
+				// TODO: handle exception
+			}
 
 		}
 
