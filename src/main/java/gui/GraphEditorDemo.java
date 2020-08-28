@@ -17,6 +17,9 @@ import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.Printable;
 import java.awt.print.PrinterJob;
@@ -33,7 +36,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
+import bayesian.gui.Home;
 import edu.uci.ics.jung.graph.ArchetypeVertex;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.Vertex;
@@ -50,10 +55,12 @@ import edu.uci.ics.jung.graph.impl.UndirectedSparseEdge;
 import edu.uci.ics.jung.visualization.AbstractLayout;
 import edu.uci.ics.jung.visualization.DefaultSettableVertexLocationFunction;
 import edu.uci.ics.jung.visualization.FRLayout;
+import edu.uci.ics.jung.visualization.GraphElementAccessor;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
 import edu.uci.ics.jung.visualization.PluggableRenderer;
 import edu.uci.ics.jung.visualization.ShapePickSupport;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
@@ -70,6 +77,11 @@ import edu.uci.ics.jung.visualization.control.ScalingControl;
  * 
  */
 public class GraphEditorDemo extends JApplet implements Printable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3466853314670015698L;
+
 	class EditingModal extends EditingModalGraphMouse{
 		public EditingModal() {
 			super();
@@ -87,6 +99,66 @@ public class GraphEditorDemo extends JApplet implements Printable {
 	    }
 		
 	}
+	protected class PopupGraphMousePlugin extends AbstractPopupGraphMousePlugin implements      MouseListener {
+
+	    public PopupGraphMousePlugin() {
+	        this(MouseEvent.BUTTON3_MASK);
+	    }
+	    public PopupGraphMousePlugin(int modifiers) {
+	        super(modifiers);
+	    }
+
+	    /**
+	     * If this event is over a station (vertex), pop up a menu to
+	     * allow the user to perform a few actions; else, pop up a menu over the layout/canvas
+	     *
+	     * @param e
+	     */
+	    @SuppressWarnings("unchecked")
+	    protected void handlePopup(MouseEvent e) {
+	        final VisualizationViewer vv =(VisualizationViewer)e.getSource();
+	        final Point2D p = e.getPoint();
+	        final Point2D ivp = p;
+	        JPopupMenu popup = new JPopupMenu();
+
+	        System.out.println("mouse event!");
+
+
+	        GraphElementAccessor pickSupport = vv.getPickSupport();
+	        System.out.println("GraphElementAccessor!");
+	        if(pickSupport != null) {
+
+
+
+	            final Vertex pickV = pickSupport.getVertex(ivp.getX(), ivp.getY());
+
+	            if(pickV != null) {
+	               System.out.println("pickVisnotNull");
+
+	               System.out.println(pickV.toString());
+	               popup.add(new AbstractAction("Show Node Information") {
+	                   /**
+	                 * 
+	                 */
+
+
+	                public void actionPerformed(ActionEvent e) {
+	                   System.out.println("person added"); 
+	                   Home home = new Home();
+	                   home.setVisible(true);
+	                   
+//	                   
+	                   }
+	               });
+	               popup.show(vv, e.getX(), e.getY());//new abstraction
+
+	            }
+	        }///if picksupport
+
+	        
+
+	    }//handlePopup(MouseEvent e)
+	}//PopupGraphMousePlugin
     /**
      * the graph
      */
@@ -168,6 +240,7 @@ public class GraphEditorDemo extends JApplet implements Printable {
         final GraphZoomScrollPane panel = new GraphZoomScrollPane(vv);
         content.add(panel);
         final EditingModalGraphMouse graphMouse = new EditingModal();
+        graphMouse.add(new PopupGraphMousePlugin());
         
         // the EditingGraphMouse will pass mouse event coordinates to the
         // vertexLocations function to set the locations of the vertices as
@@ -287,7 +360,12 @@ public class GraphEditorDemo extends JApplet implements Printable {
         
         JMenu menu = new JMenu("File");
         menu.add(new AbstractAction("Make Image") {
-            public void actionPerformed(ActionEvent e) {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1252366051812402431L;
+
+			public void actionPerformed(ActionEvent e) {
                 JFileChooser chooser  = new JFileChooser();
                 int option = chooser.showSaveDialog(demo);
                 if(option == JFileChooser.APPROVE_OPTION) {
@@ -296,7 +374,12 @@ public class GraphEditorDemo extends JApplet implements Printable {
                 }
             }});
         menu.add(new AbstractAction("Print") {
-            public void actionPerformed(ActionEvent e) {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = -7913716295244346326L;
+
+			public void actionPerformed(ActionEvent e) {
                     PrinterJob printJob = PrinterJob.getPrinterJob();
                     printJob.setPrintable(demo);
                     if (printJob.printDialog()) {

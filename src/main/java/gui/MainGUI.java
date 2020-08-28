@@ -32,7 +32,7 @@ public class MainGUI {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public static void main() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -115,7 +115,9 @@ public class MainGUI {
 		});
 		btnNewButton.setBounds(216, 203, 89, 23);
 		frmRiskmanagementApp.getContentPane().add(btnNewButton);
+		frmRiskmanagementApp.setVisible(b);
 	}
-	private static void addPopup(Component component, final JPopupMenu popup) {
+	public void setVisible(boolean isOpen) {
+		this.frmRiskmanagementApp.setVisible(isOpen);
 	}
 }
